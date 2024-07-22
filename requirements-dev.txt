@@ -4,3 +4,5 @@ pytest
 pystac
 shapely
 ipykernel
+fastapi
+uvicorn

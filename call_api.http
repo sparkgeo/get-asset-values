@@ -5,6 +5,17 @@
 
 
 ###
+
+# @name use_fastapi
+
+POST {{base_url}}/get-data-values/
+Accept: application/json
+Content-Type: application/json
+
+< fastapi_input.json
+
+
+###
 # @name call_api_2stac
 POST {{base_url}}values
 Accept: application/json

@@ -9,9 +9,10 @@ import os
 
 from get_values import get_values_from_multiple_cogs, merge_results_into_dict
 from get_values_logger import logger
-from load_cogs import load_multiple_cogs
 from load_points import check_json, points_to_xr_dataset
 from stac_parsing import get_cog_urls
+
+from src.app.load_images import load_multiple_cogs
 
 
 def get_data_values(

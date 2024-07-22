@@ -4,6 +4,7 @@ Functions to get values from a cog file
 
 import xarray as xr
 from get_values_logger import logger
+from pyproj import Transformer
 
 
 def get_values(ds: xr.DataArray, points: xr.Dataset) -> list:
@@ -19,7 +20,20 @@ def get_values(ds: xr.DataArray, points: xr.Dataset) -> list:
     replacing NaNs with None.
     """
     logger.info("Getting values from COG file")
-    values = ds.sel(x=points.x, y=points.y, method="nearest").values[0].tolist()
+    ds_crs = ds.rio.crs
+    if ds_crs == "EPSG:4326":
+        points_transformed = points
+    else:
+        transformer = Transformer.from_crs("EPSG:4326", ds_crs, always_xy=True)
+        x_t, y_t = transformer.transform(points.x, points.y)
+        points_transformed = xr.Dataset(
+            {"x": (["points"], x_t), "y": (["points"], y_t)},
+        )
+    values = (
+        ds.sel(x=points_transformed.x, y=points_transformed.y, method="nearest")
+        .values[0]
+        .tolist()
+    )
     # replace nan with None
     values = [None if str(v) == "nan" else v for v in values]
     return {"file_path": ds.attrs["file_path"], "values": values}
