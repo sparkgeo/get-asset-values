@@ -28,7 +28,7 @@ def load_cog(file_path: str) -> xr.DataArray:
     return ds
 
 
-def load_multiple_cogs(file_paths: list[str]) -> list[xr.DataArray]:
+def load_multiple_cogs(stac_items: list[dict]) -> list[xr.DataArray]:
     """
     Loads multiple COG files into xarray.DataArrays.
 
@@ -40,7 +40,9 @@ def load_multiple_cogs(file_paths: list[str]) -> list[xr.DataArray]:
     """
     logger.info("Loading COG files")
     datasets = []
-    for file_path in file_paths:
+    for stac_item in stac_items:
+        file_path = stac_item["asset_href"]
+        # output_name = stac_item["output_name"]
         ds = load_cog(file_path)
         datasets.append(ds)
     return datasets

@@ -4,6 +4,7 @@ retrieving specific assets such as COG (Cloud Optimized GeoTIFF) URLs.
 """
 
 import json
+from datetime import datetime
 
 import fsspec
 
@@ -44,9 +45,13 @@ def get_cog_url(stac_item: dict) -> str:
     """
     # TODO: Get this to work with multiple assets including zarr files
     for asset in stac_item["assets"]:
+        output_name = f"{stac_item['properties']['eo:bands'][0]['common_name']}_{datetime.fromisoformat(stac_item['properties']['datetime']).date()}"
         media_type = stac_item["assets"][asset]["type"]
         if "image/tiff" in media_type:
-            return stac_item["assets"][asset]["href"]
+            return {
+                output_name: output_name,
+                "asset_href": stac_item["assets"][asset]["href"],
+            }
 
 
 def get_cog_urls(stac_item_url_list: list[str]) -> list[str]:
