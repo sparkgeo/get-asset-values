@@ -1,9 +1,12 @@
 cwlVersion: v1.2
 $graph:
   - class: Workflow
-    id: get-asset-values-workflow-nostac
-    label: get asset values
-    doc: get asset values
+    id: lst-current
+    label: Land Surface Temperature (LST)
+    doc: >
+      The Land Surface Temperature workflow will report on observed land surface temperature observations from your assets.
+
+      This workflow requires the following columns: ID, latitude, longitude
     requirements:
       NetworkAccess:
         networkAccess: true
