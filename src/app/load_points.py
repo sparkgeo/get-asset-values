@@ -6,7 +6,8 @@ import json
 
 import numpy as np
 import xarray as xr
-from get_values_logger import logger
+
+from app.get_values_logger import logger
 
 
 def load_json(json_file: str) -> dict:
@@ -34,22 +35,31 @@ def points_to_xr_dataset(points_data: dict) -> xr.Dataset:
     Converts points data to an xarray Dataset.
 
     Parameters:
-    - points_data (dict): Data containing points.
+    - points_data (dict): Data containing points in GeoJSON format.
 
     Returns:
     xr.Dataset: Dataset with points as coordinates.
+
+    Raises:
+    ValueError: If the input data is missing or invalid.
     """
     logger.info("Converting points to xarray Dataset")
-    latitudes = np.array(
-        [point["geometry"]["coordinates"][1] for point in points_data["features"]]
-    )
-    longitudes = np.array(
-        [point["geometry"]["coordinates"][0] for point in points_data["features"]]
-    )
-    points = xr.Dataset(
+    try:
+        features = points_data["features"]
+        latitudes = np.array(
+            [feature["geometry"]["coordinates"][1] for feature in features]
+        )
+        longitudes = np.array(
+            [feature["geometry"]["coordinates"][0] for feature in features]
+        )
+    except (KeyError, TypeError, IndexError) as e:
+        logger.error(f"Invalid points data: {e}")
+        raise ValueError("Invalid points data") from e
+
+    dataset = xr.Dataset(
         {"x": (["points"], longitudes), "y": (["points"], latitudes)},
     )
-    return points
+    return dataset
 
 
 def load_json_to_xr_dataset(json_file: str) -> xr.Dataset:

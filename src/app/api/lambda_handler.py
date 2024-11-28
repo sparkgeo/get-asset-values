@@ -6,7 +6,7 @@ to fetch data values based on geographic points and STAC items.
 import json
 
 from get_values_logger import logger
-from main import process_request
+from getassetvalues.main import process_request
 
 
 def lambda_handler(event, _):

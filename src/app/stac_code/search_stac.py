@@ -127,7 +127,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--query",
-        type=dict,
+        type=str,
         help="Query to search for items in the catalog",
     )
     parser.add_argument(

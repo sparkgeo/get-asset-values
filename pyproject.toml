@@ -37,3 +37,8 @@ docstring-code-line-length = 80
 [tool.ruff.lint]
 extend-select=[]
 select = ["D103","E","F", "UP", "B","SIM","I",]
+
+[tool.uv]
+dev-dependencies = [
+    "pytest>=8.3.3",
+]

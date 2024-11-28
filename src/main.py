@@ -13,11 +13,18 @@ import traceback
 import boto3
 import pandas as pd
 import requests
-from create_stac import createStacCatalogRoot, createStacItem
-from get_values import get_values_from_multiple_stac_items, merge_results_into_dict
-from get_values_logger import logger
-from load_points import points_to_xr_dataset
-from search_stac import process_stac_query_args, search_stac
+
+from app.get_values import get_values_from_multiple_stac_items, merge_results_into_dict
+from app.get_values_logger import logger
+from app.load_points import points_to_xr_dataset
+from app.stac_code.create_stac import (
+    createStacCatalogRoot,
+    createStacItem,
+)
+from app.stac_code.search_stac import (
+    process_stac_query_args,
+    search_stac,
+)
 
 
 def get_data_values(stac_items: list[str], points_json: dict):
@@ -225,14 +232,14 @@ if __name__ == "__main__":
     logger.debug("STAC items: %s", stac_items)
 
     # create a temporary file to store the points
-    temp_file = tempfile.NamedTemporaryFile(mode="w", delete=False)
-    try:
-        logger.info("Downloading points file")
-        arg_points_json = download_points_file(args, temp_file)
-        logger.debug("Points JSON: %s", arg_points_json)
-    except RuntimeError as e:
-        logger.error(e)
-        sys.exit(1)
+    with tempfile.NamedTemporaryFile(mode="w", delete=False) as temp_file:
+        try:
+            logger.info("Downloading points file")
+            arg_points_json = download_points_file(args, temp_file)
+            logger.debug("Points JSON: %s", arg_points_json)
+        except RuntimeError as e:
+            logger.error(e)
+            sys.exit(1)
     logger.info("Processing request")
     process_response = process_request(
         points_json=arg_points_json,

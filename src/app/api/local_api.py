@@ -3,7 +3,7 @@ FastAPI app for local API
 """
 
 from fastapi import FastAPI, HTTPException
-from main import get_data_values
+from getassetvalues.main import get_data_values
 from pydantic import BaseModel
 from stac_items import default_stac_items
 
