@@ -4,7 +4,7 @@
             "type": "debugpy",
             "request": "launch",
             "name": "Run main.py with arguments",
-            "program": "${workspaceFolder}/getassetvalues/app/main.py",
+            "program": "${workspaceFolder}/src/main.py",
             "args": [
                 "--assets", "geodowd/uk_points.geojson",
                 "--stac_catalog", "https://test.eodatahub.org.uk/api/catalogue/stac/catalogs/user-datasets/sparkgeouser/processing-results/cat_f99e920a-a58e-11ef-aab0-7a33b70d8782",
