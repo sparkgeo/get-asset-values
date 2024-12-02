@@ -36,9 +36,7 @@ def determine_file_type(url: str) -> str:
         return "Unknown"
 
 
-def open_dataset(
-    url: str, crs: str | None = None, variable: str | None = None
-) -> xr.Dataset:
+def open_dataset(stac_details: dict, ds_args) -> xr.Dataset:
     """
     Opens a dataset from a URL.
 
@@ -53,6 +51,9 @@ def open_dataset(
     xr.Dataset: Dataset opened from URL.
     """
     logger.info("Opening dataset from URL")
+    url = stac_details["url"]
+    variable = ds_args.get("variable")
+    crs = ds_args.get("crs")
     file_type = determine_file_type(url)
     try:
         match file_type:
@@ -74,6 +75,10 @@ def open_dataset(
         ds.attrs["file_path"] = url
         if crs:
             ds.rio.write_crs(crs, inplace=True)
+        else:
+            if not ds.rio.crs:
+                logger.info("CRS not found in dataset. Writing default CRS.")
+                ds.rio.write_crs("EPSG:4326", inplace=True)
         return ds
     except Exception as e:
         logger.error(f"Failed to open dataset from URL: {url}. Error: {e}")
@@ -96,8 +101,10 @@ def get_values(ds: xr.DataArray, points: xr.Dataset) -> list:
     with rio.Env(aws_session):
         ds_crs = ds.rio.crs
         if ds_crs == "EPSG:4326":
+            logger.info("Dataset CRS is EPSG:4326")
             points_transformed = points
         else:
+            logger.info("Transforming points to dataset CRS")
             transformer = Transformer.from_crs("EPSG:4326", ds_crs, always_xy=True)
             x_t, y_t = transformer.transform(points.x, points.y)  # pylint: disable=E0633
             points_transformed = xr.Dataset(
@@ -128,7 +135,7 @@ def get_values(ds: xr.DataArray, points: xr.Dataset) -> list:
         return values
 
 
-def get_values_from_stac(stac_url: list[str], points: xr.Dataset) -> dict:
+def get_values_from_stac(stac_url: list[str], points: xr.Dataset, ds_args) -> dict:
     """
     Retrieves values from a COG file for given points.
 
@@ -144,13 +151,13 @@ def get_values_from_stac(stac_url: list[str], points: xr.Dataset) -> dict:
     logger.info("Got STAC item")
     stac_details = get_asset_details(stac_item)
     logger.info("STAC details: %s", stac_details)
-    ds = open_dataset(stac_details["url"])
+    ds = open_dataset(stac_details, ds_args)
     values = get_values(ds, points)
     return {"stac_details": stac_details, "values": values}
 
 
 def get_values_from_multiple_stac_items(
-    stac_urls: list[str], points: xr.Dataset
+    stac_urls: list[str], points: xr.Dataset, ds_args: str = None
 ) -> list:
     """
     Retrieves values from multiple COG files for given points.
@@ -165,7 +172,7 @@ def get_values_from_multiple_stac_items(
     logger.info("Getting values from multiple COG files")
     return_values = []
     for ds in stac_urls:
-        return_values.append(get_values_from_stac(ds, points))
+        return_values.append(get_values_from_stac(ds, points, ds_args))
     return return_values
 
 

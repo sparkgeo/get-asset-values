@@ -4,6 +4,7 @@ Main starting point for the workflow.
 """
 
 import argparse
+import ast
 import json
 import os
 import sys
@@ -27,7 +28,9 @@ from app.stac_code.search_stac import (
 )
 
 
-def get_data_values(stac_items: list[str], points_json: dict):
+def get_data_values(
+    stac_items: list[str], points_json: dict, ds_args: str = None
+) -> dict:
     """
     Fetches data values for given points from STAC items.
 
@@ -48,7 +51,7 @@ def get_data_values(stac_items: list[str], points_json: dict):
     points = points_to_xr_dataset(points_json)
     logger.info("Loading COGs")
     return_values = get_values_from_multiple_stac_items(
-        stac_urls=stac_items, points=points
+        stac_urls=stac_items, points=points, ds_args=ds_args
     )
     logger.info("Merging results into dict")
     return_json = merge_results_into_dict(return_values, points_json)
@@ -59,6 +62,7 @@ def process_request(
     points_json: dict,
     stac_items: list[str],
     workflow: bool = False,
+    ds_args: str = None,
 ) -> dict:
     """
     Processes a request to get data values for points.
@@ -73,7 +77,7 @@ def process_request(
     if not all([points_json, stac_items]):
         return {"statusCode": 400, "body": json.dumps("Missing required parameters")}
     try:
-        response = get_data_values(stac_items, points_json)
+        response = get_data_values(stac_items, points_json, ds_args)
         if workflow:
             return response
         else:
@@ -112,6 +116,7 @@ def parse_arguments():
     parser.add_argument(
         "--max_items", type=int, help="Maximum number of items to return", default=None
     )
+    parser.add_argument("--ds_args", type=str, help="Dataset arguments", default=None)
     return parser.parse_args()
 
 
@@ -241,10 +246,12 @@ if __name__ == "__main__":
             logger.error(e)
             sys.exit(1)
     logger.info("Processing request")
+    ds_args = ast.literal_eval(args.ds_args) if args.ds_args else None
     process_response = process_request(
         points_json=arg_points_json,
         stac_items=stac_items,
         workflow=True,
+        ds_args=ds_args,
     )
     logger.debug("Process response: %s", process_response)
     # Make a stac catalog.json file to satitsfy the process runner

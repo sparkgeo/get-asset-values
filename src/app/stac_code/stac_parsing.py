@@ -77,12 +77,14 @@ def get_asset_details(stac_item: dict) -> dict:
      - dict: A dictionary containing the URL of the COG asset and the datetime property,
             if found. None otherwise.
     """
-    asset_types = ["image/tiff", "application/zstd"]
+    file_types = [".tif", ".tiff", ".json"]
     logger.debug(f"STAC item: {stac_item}")
     logger.info("Getting asset details")
     for _, asset_value in stac_item.get("assets", {}).items():
-        media_type = asset_value.get("type")
-        if media_type in asset_types:
+        asset_url = asset_value.get("href")
+        asset_suffix = Path(asset_url).suffix
+        logger.info(f"Asset path: {asset_suffix}")
+        if asset_suffix in file_types:
             asset_url = asset_value.get("href")
             dt = stac_item.get("properties", {}).get("datetime")
             source_file_name = Path(asset_url).stem.replace(".", "-")

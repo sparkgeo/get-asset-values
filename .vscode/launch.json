@@ -11,7 +11,8 @@
                 "--start_date", "2024-10-15",
                 "--end_date", "2024-10-18",
                 "--stac_collection", "eocis-lst-slstrA-day",
-                "--token", "token"
+                "--token", "token",
+                "--ds_args", "{'variable':'lst'}"
 
             ]
         }
