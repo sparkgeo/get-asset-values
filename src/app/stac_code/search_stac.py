@@ -85,8 +85,11 @@ def search_catalog(
     logger.info(
         f"Searching catalog for items with time range {time_range} and query {query}"
     )
-    cq2_filter = query_to_filter(query)
-    search_params = {"datetime": time_range, "filter": cq2_filter}
+    if query is None:
+        search_params = {"datetime": time_range}
+    else:
+        cq2_filter = query_to_filter(query)
+        search_params = {"datetime": time_range, "filter": cq2_filter}
     if collection:
         search_params["collections"] = [collection]
     if max_items:
@@ -150,7 +153,7 @@ def parse_args() -> argparse.Namespace:
 
 def search_stac(
     time_range: str,
-    query: dict,
+    query: dict | None,
     catalog_url: str,
     collection: str = None,
     max_items: int = None,
@@ -193,7 +196,7 @@ def process_stac_query_args(stac_query: str) -> dict:
     """
     logger.info(f"Processing STAC query string: {stac_query}")
     if stac_query is None:
-        raise RuntimeError("The STAC query string is missing.")
+        return None
     try:
         logger.info(f"Type of stac_query: {type(stac_query)}")
         try:

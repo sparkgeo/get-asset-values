@@ -144,7 +144,8 @@ def get_values_from_stac(stac_url: list[str], points: xr.Dataset) -> dict:
     logger.info("Got STAC item")
     stac_details = get_asset_details(stac_item)
     logger.info("STAC details: %s", stac_details)
-    values = get_values(stac_details["url"], points)
+    ds = open_dataset(stac_details["url"])
+    values = get_values(ds, points)
     return {"stac_details": stac_details, "values": values}
 
 
