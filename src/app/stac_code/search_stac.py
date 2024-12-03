@@ -2,7 +2,6 @@ import argparse
 import ast
 import json
 import logging
-import os
 
 import dotenv
 import pystac_client
@@ -11,18 +10,6 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 dotenv.load_dotenv()
-
-
-def create_header() -> dict:
-    """
-    Creates the authorization header using the bearer token from environment variables.
-
-    Returns:
-        dict: A dictionary containing the authorization header.
-    """
-    token = os.environ.get("STAC_API_KEY")
-    headers = {"Authorization": f"Bearer {token}"}
-    return headers
 
 
 def open_catalog(catalog_url: str) -> pystac_client.Client:
@@ -36,11 +23,7 @@ def open_catalog(catalog_url: str) -> pystac_client.Client:
         pystac_client.Client: The opened STAC catalog client.
     """
     logger.info(f"Opening catalog at {catalog_url}")
-    headers = create_header()
-    catalog = pystac_client.Client.open(
-        catalog_url,
-        headers=headers,
-    )
+    catalog = pystac_client.Client.open(catalog_url)
     return catalog
 
 

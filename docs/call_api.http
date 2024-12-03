@@ -14,26 +14,6 @@
 
 ###
 
-# @name use_fastapi
-
-POST {{base_url}}/get-data-values/
-Accept: application/json
-Content-Type: application/json
-Connection: keep-alive
-
-< /Users/sgdowd/Documents/1_EODH/values_from_cogs2/docs/api_input_nostac.json
-
-
-###
-# @name call_lambda
-POST {{base_url}}values
-Accept: application/json
-Content-Type: application/json
-
-< /Users/sgdowd/Downloads/locon_schools_simple_no_comma_unix.geojson
-
-###
-
 # @name executeProcess
 POST https://test.eodatahub.org.uk/ades/{{workspace}}/ogc-api/processes/{{processName}}/execution HTTP/1.1
 Authorization: Bearer {{token}}
@@ -41,7 +21,7 @@ Accept: application/json
 Content-Type: application/json
 Prefer: respond-async
 
-< workflow_input_s3.json
+< workflow_input.json
 
 ###
 
@@ -54,25 +34,26 @@ Accept: application/json
 
 
 # @name getResults
-GET https://{{workspace}}.workspaces.test.eodhp.eco-ke-staging.com/files/eodhp-test-workspaces1/processing-results/cat_{{getExecuteStatus.response.body.jobID}}.json HTTP/1.1
+GET https://{{username}}.workspaces.test.eodhp.eco-ke-staging.com/files/workspaces-eodhp-test/processing-results/cat_{{getExecuteStatus.response.body.jobID}}.json
 Authorization: Bearer {{token}}
 Accept: application/json
 
 ###
 
+
 # @name getItem
-GET https://sparkgeouser.workspaces.test.eodhp.eco-ke-staging.com/files/eodhp-test-workspaces1/processing-results/cat_{{getExecuteStatus.response.body.jobID}}/col_{{getExecuteStatus.response.body.jobID}}/data-1729000851.8787746.json
+GET https://sparkgeouser.workspaces.test.eodhp.eco-ke-staging.com/files/workspaces-eodhp-test/processing-results/cat_{{getExecuteStatus.response.body.jobID}}/col_{{getExecuteStatus.response.body.jobID}}/data-1729000851.8787746.json
 Authorization: Bearer {{token}}
 Accept: application/json
 ###
 # @name getItemManual
-GET https://sparkgeouser.workspaces.test.eodhp.eco-ke-staging.com/files/eodhp-test-workspaces1/processing-results/cat_bfd833e2-8afd-11ef-8657-9625a5233070/col_bfd833e2-8afd-11ef-8657-9625a5233070/data-1729000851.8787746.json
+GET https://sparkgeouser.workspaces.test.eodhp.eco-ke-staging.com/files/workspaces-eodhp-test/processing-results/cat_bfd833e2-8afd-11ef-8657-9625a5233070/col_bfd833e2-8afd-11ef-8657-9625a5233070/data-1729000851.8787746.json
 Authorization: Bearer {{token}}
 Accept: application/json
 
 ###
 
 # @name getCsv
-GET https://sparkgeouser.workspaces.test.eodhp.eco-ke-staging.com/files/eodhp-test-workspaces1/processing-results/cat_{{getExecuteStatus.response.body.jobID}}/col_{{getExecuteStatus.response.body.jobID}}/data.csv
+GET https://sparkgeouser.workspaces.test.eodhp.eco-ke-staging.com/files/workspaces-eodhp-test/processing-results/cat_{{getExecuteStatus.response.body.jobID}}/col_{{getExecuteStatus.response.body.jobID}}/data.csv
 Authorization: Bearer {{token}}
 Accept: application/json

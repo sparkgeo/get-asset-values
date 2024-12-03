@@ -106,9 +106,6 @@ def parse_arguments():
     parser.add_argument(
         "--stac_query", type=str, help="Query to pass to stac", default=None
     )
-    parser.add_argument(
-        "--token", type=str, help="Token to authenticate to STAC catalog", default=None
-    )
     parser.add_argument("--stac_catalog", type=str, help="STAC catalog URL")
     parser.add_argument("--stac_collection", type=str, help="STAC collection ID")
     parser.add_argument("--start_date", type=str, help="Start date for STAC search")
@@ -219,8 +216,6 @@ def download_points_file(args, temp_file: str) -> dict:
 if __name__ == "__main__":
     logger.info("Starting the workflow")
     args = parse_arguments()
-
-    os.environ["STAC_API_KEY"] = args.token
 
     stac_query = process_stac_query_args(args.stac_query)
     # logger.debug("STAC query: %s", stac_query)

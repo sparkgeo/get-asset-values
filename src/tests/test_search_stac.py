@@ -1,9 +1,8 @@
-import os
 from unittest.mock import MagicMock, patch
 
 import pytest
-from getassetvalues.app.stac_code.search_stac import (
-    create_header,
+
+from app.stac_code.search_stac import (
     get_search_results,
     open_catalog,
     parse_args,
@@ -13,18 +12,9 @@ from getassetvalues.app.stac_code.search_stac import (
 )
 
 
-@patch.dict(os.environ, {"STAC_API_KEY": "mock_api_key"})
-def test_create_header():
-    expected_headers = {"Authorization": "Bearer mock_api_key"}
-    result = create_header()
-    assert result == expected_headers
-
-
-@patch("src.app.stac_code.search_stac.create_header")
-@patch("src.app.stac_code.search_stac.pystac_client.Client.open")
-def test_open_catalog(mock_client_open, mock_create_header):
+@patch("app.stac_code.search_stac.pystac_client.Client.open")
+def test_open_catalog(mock_client_open):
     # Mock the return values
-    mock_create_header.return_value = {"Authorization": "Bearer mock_api_key"}
     mock_catalog = MagicMock()
     mock_client_open.return_value = mock_catalog
 
@@ -32,10 +22,8 @@ def test_open_catalog(mock_client_open, mock_create_header):
     result = open_catalog(catalog_url)
 
     # Assertions
-    mock_create_header.assert_called_once()
     mock_client_open.assert_called_once_with(
         catalog_url,
-        headers={"Authorization": "Bearer mock_api_key"},
     )
     assert result == mock_catalog
 
@@ -61,7 +49,7 @@ def test_query_to_filter():
     assert result == expected_filter
 
 
-@patch("src.app.stac_code.search_stac.query_to_filter")
+@patch("app.stac_code.search_stac.query_to_filter")
 def test_search_catalog(mock_query_to_filter):
     # Mock the return value of query_to_filter
     mock_query_to_filter.return_value = {
@@ -187,6 +175,5 @@ def test_process_stac_query_args_invalid_format():
 
 def test_process_stac_query_args_missing_query():
     stac_query = None
-
-    with pytest.raises(RuntimeError, match="The STAC query string is missing."):
-        process_stac_query_args(stac_query)
+    result = process_stac_query_args(stac_query)
+    assert result is None

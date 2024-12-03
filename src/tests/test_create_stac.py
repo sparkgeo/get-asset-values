@@ -2,16 +2,16 @@ import datetime as dt
 from pathlib import Path
 from unittest.mock import mock_open, patch
 
-from getassetvalues.app.stac_code.create_stac import (
+from app.stac_code.create_stac import (
     createStacCatalogRoot,
     createStacItem,
 )
 
 
-@patch("src.app.stac_code.create_stac.os.path.getsize")
-@patch("src.app.stac_code.create_stac.mimetypes.guess_type")
-@patch("src.app.stac_code.create_stac.time.time_ns")
-@patch("src.app.stac_code.create_stac.open", new_callable=mock_open)
+@patch("app.stac_code.create_stac.os.path.getsize")
+@patch("app.stac_code.create_stac.mimetypes.guess_type")
+@patch("app.stac_code.create_stac.time.time_ns")
+@patch("app.stac_code.create_stac.open", new_callable=mock_open)
 def test_createStacItem(mock_open, mock_time_ns, mock_guess_type, mock_getsize):
     # Mock the return values
     mock_time_ns.return_value = 1633036800000000000  # Mocked timestamp

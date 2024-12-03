@@ -52,8 +52,12 @@ def open_dataset(stac_details: dict, ds_args) -> xr.Dataset:
     """
     logger.info("Opening dataset from URL")
     url = stac_details["url"]
-    variable = ds_args.get("variable")
-    crs = ds_args.get("crs")
+    if isinstance(ds_args, dict):
+        variable = ds_args.get("variable", None)
+        crs = ds_args.get("crs", None)
+    else:
+        variable = None
+        crs = None
     file_type = determine_file_type(url)
     try:
         match file_type:

@@ -29,8 +29,6 @@ $graph:
       stac_query:
         type: string
         doc: 
-      token:
-        type: string
     outputs:
       - id: asset-result
         type: Directory
@@ -46,7 +44,6 @@ $graph:
           end_date: end_date
           stac_collection: stac_collection
           stac_query: stac_query
-          token: token
         out:
           - asset-result
   - class: CommandLineTool
@@ -94,12 +91,6 @@ $graph:
                 prefix: --stac_collection=
                 separate: false
                 position: 5
-        token:
-            type: string
-            inputBinding:
-                prefix: --token=
-                separate: false
-                position: 6
     outputs:
         asset-result:
             type: Directory

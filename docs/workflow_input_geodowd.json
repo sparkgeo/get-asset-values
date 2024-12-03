@@ -2,11 +2,10 @@
     "inputs": {
         "workspace": "geodowd",
         "assets": "geodowd/uk_points.geojson",
-        "stac_catalog": "https://test.eodatahub.org.uk/api/catalogue/stac/catalogs/user-datasets/sparkgeouser/processing-results/cat_f99e920a-a58e-11ef-aab0-7a33b70d8782",
+        "stac_catalog": "https://test.eodatahub.org.uk/api/catalogue/stac/catalogs/supported-datasets/temp-sparkgeouser/processing-results/cat_f99e920a-a58e-11ef-aab0-7a33b70d8782",
         "start_date": "2024-03-01",
         "end_date": "2024-03-03",
         "stac_collection": "col_f99e920a-a58e-11ef-aab0-7a33b70d8782",
         "stac_query": "{'day_night': 'NIGHT'}",
-        "token": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJwNmhOMVBXWmFxcnZxb0N2ZlJpZXkwWEtVTm1TZWpiNmJieTZJQUthQlQ4In0.eyJleHAiOjE3MzMzMDE0OTYsImlhdCI6MTczMDcwOTQ5NiwianRpIjoiZjE5ZTlmMjgtMWI1OC00NzFjLTgzNmItMjc4MDBhMmJkNzE0IiwiaXNzIjoiaHR0cHM6Ly90ZXN0LmVvZGF0YWh1Yi5vcmcudWsva2V5Y2xvYWsvcmVhbG1zL2VvZGhwIiwiYXVkIjpbIm9hdXRoMi1wcm94eS13b3Jrc3BhY2VzIiwib2F1dGgyLXByb3h5IiwiYWNjb3VudCJdLCJzdWIiOiI5Mzk2ZTE4Ni00MTMzLTQzNTUtYjIyYi0zOTdkZWM1N2RmMzAiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJ0b2tlbi1jbGllbnQiLCJzZXNzaW9uX3N0YXRlIjoiOTkxZGM1MzYtMmY4OS00NjQ5LWIzNWEtN2UxMDJiYjA4NTRhIiwiYWxsb3dlZC1vcmlnaW5zIjpbIi8qIl0sInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJkZWZhdWx0LXJvbGVzLWVvZGhwIiwib2ZmbGluZV9hY2Nlc3MiLCJodWJfdXNlciIsInVtYV9hdXRob3JpemF0aW9uIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsIm1hbmFnZS1hY2NvdW50LWxpbmtzIiwidmlldy1wcm9maWxlIl19fSwic2NvcGUiOiJlbWFpbCBwcm9maWxlIG9mZmxpbmVfYWNjZXNzIiwic2lkIjoiOTkxZGM1MzYtMmY4OS00NjQ5LWIzNWEtN2UxMDJiYjA4NTRhIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsIm5hbWUiOiJTcGFyayBHZW8iLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJzcGFya2dlb3VzZXIiLCJnaXZlbl9uYW1lIjoiU3BhcmsiLCJmYW1pbHlfbmFtZSI6IkdlbyIsImVtYWlsIjoidXNlckBzcGFya2dlby5jb20ifQ.iQOr11g6zpdqcRDJVbLtF7S5aPjE2O93kKGJl6QOuUbp3_-KA5ABl09xirL2QfKqjrlH5UZP_qagc_qD6mmJC5qdEwYuFR__6nXbUQQCdfwj1t5X9b5LAG4gJPQj9AwlyBzODxJC0M2W83mBFsIj36amfB0o1g9oMD4fH_o5UQTA12H8C05GKjpFHjDRMyE0cKRhTrLBVvrw4RKGcpp3Ic9tQ3qVFijZGNwgQNWM4Lhdm03ZyBlVVXsoQAJ4isumKU2UwtIGYfsExUS-X0kD1yRJpZKEe3dC5xbX0Y-54ckIXzjxLPVSPMK9pMZuYdIUy6SCd4McFcoHxkR9JlKT5g"
     }
 }

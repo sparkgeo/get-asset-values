@@ -4,7 +4,6 @@ retrieving specific assets such as COG (Cloud Optimized GeoTIFF) URLs.
 """
 
 import json
-import os
 from pathlib import Path
 
 import requests
@@ -27,10 +26,8 @@ def get_stac_item(url: str) -> dict:
     - dict: The STAC item loaded as a dictionary.
     """
     try:
-        token = os.environ.get("STAC_API_KEY")
-        headers = {"Authorization": f"Bearer {token}"}
         logger.debug(f"Attempting to open URL: {url}")
-        with requests.get(url, headers=headers) as f:
+        with requests.get(url) as f:
             try:
                 logger.debug(f"Successfully opened URL: {url}")
                 stac_item = f.json()

@@ -1,4 +1,4 @@
-from getassetvalues.app.stac_code.stac_parsing import get_asset_details
+from app.stac_code.stac_parsing import get_asset_details
 
 
 def test_get_asset_details():
@@ -38,7 +38,7 @@ def test_get_asset_details_no_matching_asset():
         "assets": {
             "asset1": {
                 "type": "application/json",
-                "href": "https://example.com/asset1.json",
+                "href": "https://example.com/asset1.txt",
             }
         },
         "properties": {"datetime": "2024-02-01T00:00:00Z", "unit": "c"},
