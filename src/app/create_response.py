@@ -18,20 +18,22 @@ class ResponseStatus:
 class WorkflowResponse:
     def __init__(
         self,
-        out_file: str,
+        status: ResponseStatus,
         process_response: dict,
-        status: ResponseStatus = ResponseStatus.SUCCESS,
         error_msg=None,
     ):
         self.status = status
         self.error_msg = error_msg
-        self.out_file = out_file
         self.process_response = process_response
+        if self.status == ResponseStatus.ERROR:
+            self.out_file = "./error.txt"
+            self.create_error_response()
+        else:
+            self.out_file = "./data.csv"
+            self.to_csv()
         self.stac_item = self.createStacItem()
         self.stac_catalog_root = self.createStacCatalogRoot()
         self.write_stac_files()
-        if self.status == ResponseStatus.ERROR:
-            self.create_error_response(error_msg)
 
     def createStacItem(self) -> dict:
         """
@@ -115,7 +117,7 @@ class WorkflowResponse:
         except Exception as e:
             logger.error(f"Error writing STAC files: {e}")
 
-    def to_csv(self, out_csv: str) -> None:
+    def to_csv(self) -> None:
         """
         Converts a JSON response to a CSV file with columns for every datetime,
         a row for every id, and values of 'value'.
@@ -144,13 +146,13 @@ class WorkflowResponse:
 
             pivot_df = pivot_df.astype(object).where(pd.notnull(pivot_df), None)
             pivot_df.fillna("null", inplace=True)
-            pivot_df.to_csv(out_csv, index=False)
-            logger.info("CSV file successfully created at %s", out_csv)
+            pivot_df.to_csv("./data.csv", index=False)
+            logger.info("CSV file successfully created at %s", "./data.csv")
         except Exception as e:
             logger.error("An error occurred: %s", e)
             raise
 
-    def create_error_response(self, error_msg: str) -> dict:
+    def create_error_response(self) -> dict:
         """
         Create an error response with the given error message.
 
@@ -162,7 +164,7 @@ class WorkflowResponse:
         """
         error_return = {
             "statusCode": 500,
-            "body": json.dumps({"error": error_msg}),
+            "body": {"error": self.error_msg},
         }
         json_to_file(error_return, self.out_file)
 

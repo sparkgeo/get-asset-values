@@ -124,7 +124,9 @@ if __name__ == "__main__":
     if stac_items is None or stac_items == []:
         logger.error("No STAC items found")
         response = WorkflowResponse(
-            "/error.txt", status=ResponseStatus.ERROR, error_msg="No STAC items found"
+            status=ResponseStatus.ERROR,
+            error_msg="No STAC items found",
+            process_response={},
         )
     else:
         logger.info("Found STAC items")
@@ -143,5 +145,7 @@ if __name__ == "__main__":
             ds_args=ds_args,
         )
         logger.debug("Process response: %s", process_response)
-        response = WorkflowResponse("./data.csv", process_response=process_response)
-        response.to_csv("./data.csv")
+        response = WorkflowResponse(
+            process_response=process_response,
+            status=ResponseStatus.SUCCESS,
+        )
