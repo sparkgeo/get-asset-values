@@ -1,7 +1,7 @@
 cwlVersion: v1.2
 $graph:
   - class: Workflow
-    id: lst-filter
+    id: lst-xarray
     label: Land Surface Temperature (LST)
     doc: >
       The Land Surface Temperature workflow will report on observed land surface temperature observations from your assets.
@@ -27,8 +27,11 @@ $graph:
         type: string
         doc: STAC collection to search
       stac_query:
-        type: string
+        type: string?
         doc: 
+      ds_args:
+        type: string?
+        doc: Arguments to pass to the data loader
     outputs:
       - id: asset-result
         type: Directory
@@ -44,6 +47,7 @@ $graph:
           end_date: end_date
           stac_collection: stac_collection
           stac_query: stac_query
+          ds_args: ds_args
         out:
           - asset-result
   - class: CommandLineTool
@@ -52,7 +56,7 @@ $graph:
         NetworkAccess:
             networkAccess: true
         DockerRequirement:
-            dockerPull: public.ecr.aws/z0u8g6n1/get_asset_values:filter12
+            dockerPull: public.ecr.aws/z0u8g6n1/get_asset_values:xarray1
     baseCommand: main.py
     inputs:
         assets:
@@ -62,7 +66,7 @@ $graph:
                 separate: false
                 position: 4
         stac_query:
-            type: string
+            type: string?
             inputBinding:
                 prefix: --stac_query=
                 separate: false
@@ -91,6 +95,12 @@ $graph:
                 prefix: --stac_collection=
                 separate: false
                 position: 5
+        ds_args:
+            type: string?
+            inputBinding:
+                prefix: --ds_args=
+                separate: false
+                position: 6
     outputs:
         asset-result:
             type: Directory

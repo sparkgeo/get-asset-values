@@ -229,29 +229,40 @@ if __name__ == "__main__":
         collection=args.stac_collection,
         max_items=args.max_items,
     )
-    logger.debug("STAC items: %s", stac_items)
-
-    # create a temporary file to store the points
-    with tempfile.NamedTemporaryFile(mode="w", delete=False) as temp_file:
-        try:
-            logger.info("Downloading points file")
-            arg_points_json = download_points_file(args, temp_file)
-            logger.debug("Points JSON: %s", arg_points_json)
-        except RuntimeError as e:
-            logger.error(e)
-            sys.exit(1)
-    logger.info("Processing request")
-    ds_args = ast.literal_eval(args.ds_args) if args.ds_args else None
-    process_response = process_request(
-        points_json=arg_points_json,
-        stac_items=stac_items,
-        workflow=True,
-        ds_args=ds_args,
-    )
-    logger.debug("Process response: %s", process_response)
-    # Make a stac catalog.json file to satitsfy the process runner
-    out_name = "./data.csv"
-    response_to_csv(process_response, out_name)
+    if stac_items is None or stac_items == []:
+        logger.error("No STAC items found")
+        process_response = {
+            "statusCode": 404,
+            "body": "No STAC items found",
+        }
+        out_name = "./error.txt"
+        # write to a file
+        with open(out_name, "w") as f:
+            f.write("No STAC items found")
+    else:
+        logger.info("Found STAC items")
+        logger.debug("STAC items: %s", stac_items)
+        # create a temporary file to store the points
+        with tempfile.NamedTemporaryFile(mode="w", delete=False) as temp_file:
+            try:
+                logger.info("Downloading points file")
+                arg_points_json = download_points_file(args, temp_file)
+                logger.debug("Points JSON: %s", arg_points_json)
+            except RuntimeError as e:
+                logger.error(e)
+                sys.exit(1)
+        logger.info("Processing request")
+        ds_args = ast.literal_eval(args.ds_args) if args.ds_args else None
+        process_response = process_request(
+            points_json=arg_points_json,
+            stac_items=stac_items,
+            workflow=True,
+            ds_args=ds_args,
+        )
+        logger.debug("Process response: %s", process_response)
+        # Make a stac catalog.json file to satitsfy the process runner
+        out_name = "./data.csv"
+        response_to_csv(process_response, out_name)
 
     with open("./catalog.json", "w", encoding="utf-8") as f:
         catalog = createStacCatalogRoot(outName=out_name)

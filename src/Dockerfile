@@ -9,7 +9,8 @@ ADD app/requirements.txt /tmp/requirements.txt
 
 RUN pip install --no-cache-dir -r /tmp/requirements.txt
 
-ADD app/*.py /usr/bin/
+
+COPY . /usr/bin/
 RUN chmod +x /usr/bin/*.py
 
 FROM python:3.11.0-slim
