@@ -12,10 +12,7 @@ from app.create_response import ResponseStatus, WorkflowResponse
 from app.get_values import get_values_from_multiple_stac_items, merge_results_into_dict
 from app.get_values_logger import logger
 from app.points_data import PointsData
-from app.stac_code.search_stac import (
-    process_stac_query_args,
-    search_stac,
-)
+from app.stac_code.search_stac import StacSearch
 
 
 def get_data_values(
@@ -102,26 +99,29 @@ def parse_arguments():
         "--max_items", type=int, help="Maximum number of items to return", default=None
     )
     parser.add_argument("--ds_args", type=str, help="Dataset arguments", default=None)
-    return parser.parse_args()
+    args = parser.parse_args()
+    try:
+        args.ds_args = ast.literal_eval(args.ds_args) if args.ds_args else None
+    except (ValueError, SyntaxError) as e:
+        logger.error(f"Error parsing ds_args: {e}")
+        args.ds_args = None
+    return args
 
 
 if __name__ == "__main__":
     logger.info("Starting the workflow")
     args = parse_arguments()
 
-    stac_query = process_stac_query_args(args.stac_query)
-
-    time_range = f"{args.start_date}/{args.end_date}"
-
-    stac_items = search_stac(
-        time_range=time_range,
-        query=stac_query,
+    stac_search = StacSearch(
         catalog_url=args.stac_catalog,
+        start_date=args.start_date,
+        end_date=args.end_date,
+        stac_query=args.stac_query,
         collection=args.stac_collection,
         max_items=args.max_items,
     )
 
-    if stac_items is None or stac_items == []:
+    if stac_search.number_of_results == 0:
         logger.error("No STAC items found")
         response = WorkflowResponse(
             status=ResponseStatus.ERROR,
@@ -133,16 +133,12 @@ if __name__ == "__main__":
         points_data = PointsData(args.assets)
 
         logger.info("Processing request")
-        try:
-            ds_args = ast.literal_eval(args.ds_args) if args.ds_args else None
-        except (ValueError, SyntaxError) as e:
-            logger.error(f"Error parsing ds_args: {e}")
-            ds_args = None
+
         process_response = process_request(
             points=points_data,
-            stac_items=stac_items,
+            stac_items=stac_search.results,
             workflow=True,
-            ds_args=ds_args,
+            ds_args=args.ds_args,
         )
         logger.debug("Process response: %s", process_response)
         response = WorkflowResponse(

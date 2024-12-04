@@ -5,7 +5,6 @@ import pytest
 from app.stac_code.search_stac import (
     get_search_results,
     open_catalog,
-    parse_args,
     process_stac_query_args,
     query_to_filter,
     search_catalog,
@@ -132,24 +131,6 @@ def test_get_search_results():
         "10",
     ],
 )
-def test_parse_args():
-    expected_args = {
-        "time_range": "2024-02-01T00:00:00Z/2024-02-28T23:59:59Z",
-        "query": "{'day_night': 'DAY', 'unit': 'c'}",
-        "catalog_url": "https://example.com/stac_catalog",
-        "collection": "example-collection",
-        "max_items": 10,
-    }
-
-    args = parse_args()
-
-    assert args.time_range == expected_args["time_range"]
-    assert args.query == expected_args["query"]
-    assert args.catalog_url == expected_args["catalog_url"]
-    assert args.collection == expected_args["collection"]
-    assert args.max_items == expected_args["max_items"]
-
-
 def test_process_stac_query_args_valid_json():
     stac_query = '{"day_night": "DAY", "unit": "c"}'
     expected_result = {"day_night": "DAY", "unit": "c"}
