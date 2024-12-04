@@ -8,7 +8,7 @@
 @executeStatus = {{executeProcess.response.headers.Location}}
 
 
-@processName = lst-filter
+@processName = lst-xarray
 
 
 
@@ -21,7 +21,7 @@ Accept: application/json
 Content-Type: application/json
 Prefer: respond-async
 
-< workflow_input.json
+< workflow_input_s3.json
 
 ###
 

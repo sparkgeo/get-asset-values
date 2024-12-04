@@ -10,7 +10,7 @@
 
 @jobid = {{getExecuteStatus.response.body.jobID}}
 
-@processName = lst-filter
+@processName = lst-xarray
 
 
 
