@@ -29,7 +29,7 @@ $graph:
       stac_query:
         type: string?
         doc: 
-      ds_args:
+      extra_args:
         type: string?
         doc: Arguments to pass to the data loader
     outputs:
@@ -47,7 +47,7 @@ $graph:
           end_date: end_date
           stac_collection: stac_collection
           stac_query: stac_query
-          ds_args: ds_args
+          extra_args: extra_args
         out:
           - asset-result
   - class: CommandLineTool
@@ -95,10 +95,10 @@ $graph:
                 prefix: --stac_collection=
                 separate: false
                 position: 5
-        ds_args:
+        extra_args:
             type: string?
             inputBinding:
-                prefix: --ds_args=
+                prefix: --extra_args=
                 separate: false
                 position: 6
     outputs:

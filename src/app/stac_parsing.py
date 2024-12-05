@@ -92,13 +92,12 @@ class StacItem:
                 dt = self.stac_item.get("properties", {}).get("datetime")
                 source_file_name = Path(url).stem.replace(".", "-")
                 unit = self.stac_item.get("properties", {}).get("unit")
-
-        return AssetDetails(url, dt, source_file_name, unit)
+                return AssetDetails(url, dt, source_file_name, unit)
 
 
 def get_asset_data_list(stac_item_url_list: list[str]) -> list[AssetDetails]:
     """
-    Retrieve a list of asset URLs from a list of STAC item URLs.
+    Retrieve a list of asset details from a list of STAC item URLs.
 
     This function retrieves a list of assetsdetails
     from a list of STAC (SpatioTemporal Asset Catalog) item

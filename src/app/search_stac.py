@@ -1,5 +1,3 @@
-import ast
-import json
 import logging
 
 import pystac_client
@@ -22,7 +20,7 @@ class StacSearch:
         self.catalog = self.open_catalog()
         self.start_date = start_date
         self.end_date = end_date
-        self.query = self.process_stac_query_args(stac_query)
+        self.query = stac_query
         self.collection = collection
         self.max_items = max_items
         self.search = self.search_catalog()
@@ -110,29 +108,3 @@ class StacSearch:
                 }
             )
         return {"op": "and", "args": filters}
-
-    def process_stac_query_args(self, stac_query) -> dict:
-        """
-        Processes the STAC query string and returns a dictionary.
-
-        Args:
-            stac_query (str): The query string to process.
-
-        Returns:
-            dict: The query parameters as a dictionary.
-        """
-        logger.info(f"Processing STAC query string: {stac_query}")
-        if stac_query is None:
-            return None
-        try:
-            try:
-                query_dict = json.loads(stac_query)
-            except json.JSONDecodeError:
-                try:
-                    query_dict = ast.literal_eval(stac_query)
-                except ValueError as e:
-                    raise ValueError(f"Invalid stac_query format: {e}") from e
-
-            return query_dict
-        except json.JSONDecodeError as exc:
-            raise RuntimeError("Failed to decode the STAC query string") from exc

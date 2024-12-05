@@ -4,53 +4,14 @@ Main starting point for the workflow.
 """
 
 import argparse
-import ast
-import json
-import traceback
 
 from app.create_response import ResponseStatus, WorkflowResponse
-from app.get_values import get_values_from_multiple_stac_items, merge_results_into_dict
+from app.extra import string_to_json
+from app.get_values import get_values_for_multiple_stac_assets, merge_results_into_dict
 from app.get_values_logger import logger
 from app.points_data import PointsData
 from app.search_stac import StacSearch
 from app.stac_parsing import get_asset_data_list
-
-
-def get_data_values(
-    stac_items: list[str], points: PointsData, ds_args: str = None
-) -> dict:
-    return_values = get_values_from_multiple_stac_items(
-        stac_urls=stac_items, points=points.points_to_xr_dataset(), ds_args=ds_args
-    )
-    logger.info("Merging results into dict")
-    return_json = merge_results_into_dict(return_values, points.data)
-    return return_json
-
-
-def process_request(
-    points: PointsData,
-    stac_items: list[str],
-    ds_args: str = None,
-) -> dict:
-    """
-    Processes a request to get data values for points.
-
-    Parameters:
-    - points_json (dict): JSON containing points data.
-    - stac_items (list[str]): List of STAC item IDs.
-
-    Returns:
-    dict: Response with status code and body.
-    """
-    if not all([points, stac_items]):
-        return {"statusCode": 400, "body": json.dumps("Missing required parameters")}
-    try:
-        response = get_data_values(stac_items, points, ds_args)
-        return response
-    except Exception as e:
-        logger.error("Error processing request: %s", e)
-        logger.debug("Stack trace: %s", traceback.format_exc())
-        return {"statusCode": 500, "body": json.dumps(str(e))}
 
 
 def parse_arguments():
@@ -74,20 +35,18 @@ def parse_arguments():
     parser.add_argument(
         "--max_items", type=int, help="Maximum number of items to return", default=None
     )
-    parser.add_argument("--ds_args", type=str, help="Dataset arguments", default=None)
+    parser.add_argument(
+        "--extra_args", type=str, help="Extra arguments for the workflow", default=None
+    )
     args = parser.parse_args()
-    try:
-        args.ds_args = ast.literal_eval(args.ds_args) if args.ds_args else None
-    except (ValueError, SyntaxError) as e:
-        logger.error(f"Error parsing ds_args: {e}")
-        args.ds_args = None
+
+    args.extra_args = string_to_json(args.extra_args) if args.extra_args else None
+    args.stac_query = string_to_json(args.stac_query) if args.stac_query else None
+
     return args
 
 
-if __name__ == "__main__":
-    logger.info("Starting the workflow")
-    args = parse_arguments()
-
+def run_workflow(args: argparse.Namespace) -> None:
     stac_search = StacSearch(
         catalog_url=args.stac_catalog,
         start_date=args.start_date,
@@ -99,7 +58,7 @@ if __name__ == "__main__":
 
     if stac_search.number_of_results == 0:
         logger.error("No STAC items found")
-        response = WorkflowResponse(
+        WorkflowResponse(
             status=ResponseStatus.ERROR,
             error_msg="No STAC items found",
             process_response={},
@@ -111,14 +70,23 @@ if __name__ == "__main__":
         logger.info("Getting asset data list")
         asset_data_list = get_asset_data_list(stac_search.results)
 
-        process_response = process_request(
-            points=points_data,
-            stac_items=stac_search.results,
-            workflow=True,
-            ds_args=args.ds_args,
+        logger.info("Getting values from STAC items")
+        return_values = get_values_for_multiple_stac_assets(
+            asset_details_list=asset_data_list,
+            points=points_data.points_to_xr_dataset(),
+            extra_args=args.extra_args,
         )
+        logger.info("Merging results into dict")
+        process_response = merge_results_into_dict(return_values, points_data.data)
+
         logger.debug("Process response: %s", process_response)
-        response = WorkflowResponse(
+        WorkflowResponse(
             process_response=process_response,
             status=ResponseStatus.SUCCESS,
         )
+
+
+if __name__ == "__main__":
+    logger.info("Starting the workflow")
+    args = parse_arguments()
+    run_workflow(args)

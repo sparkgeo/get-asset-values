@@ -6,10 +6,10 @@ from app.stac_parsing import AssetDetails
 
 
 class AssetDataArray:
-    def __init__(self, asset_details: AssetDetails, ds_args: dict = None) -> None:
+    def __init__(self, asset_details: AssetDetails, extra_args: dict = None) -> None:
         self.asset_details = asset_details
         self.file_type = self.determine_file_type()
-        self.ds_args = ds_args
+        self.extra_args = extra_args
         self.ds = self.open_dataset()
 
     def determine_file_type(self) -> str:
@@ -42,9 +42,9 @@ class AssetDataArray:
         """
         logger.info("Opening dataset from URL")
         url = self.asset_details.url
-        if isinstance(self.ds_args, dict):
-            variable = self.ds_args.get("variable", None)
-            crs = self.ds_args.get("crs", None)
+        if isinstance(self.extra_args, dict):
+            variable = self.extra_args.get("variable", None)
+            crs = self.extra_args.get("crs", None)
         else:
             variable = None
             crs = None
