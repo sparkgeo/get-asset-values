@@ -1,4 +1,4 @@
-from app.stac_code.stac_parsing import get_asset_details
+from app.stac_parsing import get_asset_details
 
 
 def test_get_asset_details():

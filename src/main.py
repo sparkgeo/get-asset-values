@@ -12,29 +12,13 @@ from app.create_response import ResponseStatus, WorkflowResponse
 from app.get_values import get_values_from_multiple_stac_items, merge_results_into_dict
 from app.get_values_logger import logger
 from app.points_data import PointsData
-from app.stac_code.search_stac import StacSearch
+from app.search_stac import StacSearch
+from app.stac_parsing import get_asset_data_list
 
 
 def get_data_values(
     stac_items: list[str], points: PointsData, ds_args: str = None
 ) -> dict:
-    """
-    Fetches data values for given points from STAC items.
-
-    This function retrieves Cloud Optimized GeoTIFF (COG) URLs
-    from the provided STAC items, loads the COGs, and extracts
-    data values at specified points. The results are merged into
-    a dictionary structure and returned.
-
-    Parameters:
-    - stac_items (list[str]): List of STAC item URLs.
-    - points_json (dict): JSON object containing points.
-
-    Returns:
-    dict: A dictionary with the merged results of data values
-    for the provided points.
-    """
-    logger.info("Loading COGs")
     return_values = get_values_from_multiple_stac_items(
         stac_urls=stac_items, points=points.points_to_xr_dataset(), ds_args=ds_args
     )
@@ -46,7 +30,6 @@ def get_data_values(
 def process_request(
     points: PointsData,
     stac_items: list[str],
-    workflow: bool = False,
     ds_args: str = None,
 ) -> dict:
     """
@@ -63,14 +46,7 @@ def process_request(
         return {"statusCode": 400, "body": json.dumps("Missing required parameters")}
     try:
         response = get_data_values(stac_items, points, ds_args)
-        if workflow:
-            return response
-        else:
-            try:
-                return {"statusCode": 200, "body": json.dumps(response)}
-            except Exception as e:
-                logger.error("Error when returning response: %s", e)
-                return {"statusCode": 500, "body": json.dumps(str(e))}
+        return response
     except Exception as e:
         logger.error("Error processing request: %s", e)
         logger.debug("Stack trace: %s", traceback.format_exc())
@@ -129,10 +105,11 @@ if __name__ == "__main__":
             process_response={},
         )
     else:
-        logger.info("Found STAC items")
+        logger.info("Found STAC items, getting points data")
         points_data = PointsData(args.assets)
 
-        logger.info("Processing request")
+        logger.info("Getting asset data list")
+        asset_data_list = get_asset_data_list(stac_search.results)
 
         process_response = process_request(
             points=points_data,

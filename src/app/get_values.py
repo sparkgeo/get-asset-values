@@ -11,7 +11,7 @@ from rasterio.session import AWSSession
 from shortuuid import ShortUUID
 
 from app.get_values_logger import logger
-from app.stac_code.stac_parsing import get_asset_details, get_stac_item
+from app.stac_parsing import get_asset_details, get_stac_item
 
 aws_session = AWSSession(aws_unsigned=True)
 

@@ -2,7 +2,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from app.stac_code.search_stac import (
+from app.search_stac import (
     get_search_results,
     open_catalog,
     process_stac_query_args,
