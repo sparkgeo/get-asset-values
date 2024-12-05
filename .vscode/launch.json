@@ -31,7 +31,8 @@
                 "--start_date", "2024-04-15",
                 "--end_date", "2024-04-16",
                 "--stac_collection", "col_f99e920a-a58e-11ef-aab0-7a33b70d8782",
-                "--extra_args", ""
+                "--extra_args", "{'output_name': \"{dt_string}_{file_name.split('_')[3].split('-')[0]}_S3{file_name.split('_')[1].split('-')[4][5]}\"}"
+
 
             ]
         },
@@ -47,6 +48,21 @@
                 "--end_date", "2023-04-16",
                 "--stac_collection", "col_f99e920a-a58e-11ef-aab0-7a33b70d8782",
                 "--extra_args", ""
+
+            ]
+        },
+        {
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/main.py",
+            "name": "London LST",
+            "args": [
+                "--assets", "https://lst-cogs.s3.eu-west-1.amazonaws.com/points.geojson",
+                "--stac_catalog", "https://test.eodatahub.org.uk/api/catalogue/stac/catalogs/supported-datasets/temp-sparkgeouser/processing-results/cat_c1f6f668-b2f8-11ef-b6b1-ee3aaed8a789",
+                "--start_date", "2023-01-01",
+                "--end_date", "2023-12-31",
+                "--stac_collection", "col_c1f6f668-b2f8-11ef-b6b1-ee3aaed8a789",
+                "--extra_args", "{'output_name':'date_{date}'}"
 
             ]
         }

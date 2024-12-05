@@ -10,7 +10,7 @@ import xarray as xr
 from app.get_values_logger import logger
 
 
-class PointsData:
+class SpatialData:
     def __init__(self, source: str):
         self.source = source
         self.data = self.download()
@@ -41,7 +41,7 @@ class PointsData:
 
     def download(self) -> dict:
         """
-        Download a points file from an HTTP URL or an
+        Download a spatial file from an HTTP URL or an
         S3 bucket and load its JSON content.
 
         Args:
@@ -76,7 +76,7 @@ class PointsData:
             self.data = self.load_json_from_file(base_name)
         return self.data
 
-    def points_to_xr_dataset(self) -> xr.Dataset:
+    def spatial_to_xr_dataset(self) -> xr.Dataset:
         """
         Converts points data to an xarray Dataset.
 

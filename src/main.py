@@ -9,7 +9,7 @@ from app.create_response import ResponseStatus, WorkflowResponse
 from app.extra import string_to_json
 from app.get_values import get_values_for_multiple_stac_assets
 from app.get_values_logger import logger
-from app.points_data import PointsData
+from app.points_data import SpatialData
 from app.search_stac import StacSearch
 from app.stac_parsing import get_asset_data_list
 
@@ -61,7 +61,7 @@ def run_workflow(args: argparse.Namespace) -> None:
         WorkflowResponse(status=ResponseStatus.ERROR, error_msg="No STAC items found")
     else:
         logger.info("Found STAC items, getting points data")
-        points_data = PointsData(args.assets)
+        spatial_data = SpatialData(args.assets)
 
         logger.info("Getting asset data list")
         asset_data_list = get_asset_data_list(stac_search.results)
@@ -69,7 +69,7 @@ def run_workflow(args: argparse.Namespace) -> None:
         logger.info("Getting values from STAC items")
         return_values = get_values_for_multiple_stac_assets(
             asset_details_list=asset_data_list,
-            points=points_data.points_to_xr_dataset(),
+            points=spatial_data.spatial_to_xr_dataset(),
             extra_args=args.extra_args,
         )
         logger.info("Merging results into dict")
@@ -78,7 +78,8 @@ def run_workflow(args: argparse.Namespace) -> None:
         WorkflowResponse(
             return_values=return_values,
             status=ResponseStatus.SUCCESS,
-            points_json=points_data.data,
+            points_json=spatial_data.data,
+            extra_args=args.extra_args,
         )
 
 

@@ -24,9 +24,11 @@ class WorkflowResponse:
         return_values: dict = None,
         points_json: dict = None,
         error_msg=None,
+        extra_args=None,
     ):
         self.status = status
         self.error_msg = error_msg
+        self.extra_args = extra_args
         if self.status == ResponseStatus.ERROR:
             self.process_response = {}
             self.out_file = "./error.txt"
@@ -194,15 +196,19 @@ class WorkflowResponse:
 
         for result in results_list:
             dt = result["asset_details"].datetime
-            # dt in YYYY-MM-DD HH:MM format
             logger.info("Datetime: %s", dt)
-            dt_string = parse(dt).strftime("%Y-%m-%d %H:%M")
+            dt_string = parse(dt).strftime("%Y-%m-%d")
             logger.info("Datetime string: %s", dt_string)
             file_name = result["asset_details"].source_file_name
             unit = result["asset_details"].unit
+            if self.extra_args and "output_name" in self.extra_args:
+                output_name = self.extra_args["output_name"]
+                output_name = eval(f"f'{output_name}'")
+            else:
+                output_name = dt_string
             for index, value in enumerate(result["values"]):
                 request_json["features"][index]["properties"]["returned_values"][
-                    dt_string
+                    output_name
                 ] = {
                     "value": value,
                     "datetime": dt,
