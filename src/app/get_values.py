@@ -4,10 +4,8 @@ Functions to get values from a cog file
 
 import rasterio as rio
 import xarray as xr
-from dateutil.parser import parse
 from pyproj import Transformer
 from rasterio.session import AWSSession
-from shortuuid import ShortUUID
 
 from app.create_dataarray import AssetDataArray
 from app.get_values_logger import logger
@@ -69,6 +67,18 @@ def get_values(ds: xr.DataArray, points: xr.Dataset) -> list:
 def get_values_for_multiple_stac_assets(
     asset_details_list: list[AssetDetails], points: xr.Dataset, extra_args: str = None
 ) -> list:
+    """
+    Retrieve values for multiple STAC assets.
+
+    Parameters:
+    asset_details_list (list[AssetDetails]): List of asset details to process.
+    points (xr.Dataset): Dataset containing the points to extract values for.
+    extra_args (str, optional): Additional arguments for asset processing.
+
+    Returns:
+    list: A list of dictionaries containing asset details and their
+    corresponding values.
+    """
     logger.debug("Getting values from multiple files")
     return_values = []
     for asset_details in asset_details_list:
@@ -77,39 +87,3 @@ def get_values_for_multiple_stac_assets(
         result = get_values(ds=da, points=points)
         return_values.append({"asset_details": asset_details, "values": result})
     return return_values
-
-
-def merge_results_into_dict(results_list: list, request_json: dict) -> dict:
-    """
-    Merges extracted values into the original request JSON.
-
-    Parameters:
-    - results_list (list): List of dicts with file paths and values.
-    - request_json (dict): Original request GeoJSON to merge results into.
-
-    Returns:
-    dict: The updated request JSON with merged results.
-    """
-    for feature in request_json["features"]:
-        if "id" not in feature["properties"]:
-            feature["properties"]["id"] = ShortUUID().random(length=8)
-        feature["properties"]["returned_values"] = {}
-
-    for result in results_list:
-        dt = result["asset_details"].datetime
-        # dt in YYYY-MM-DD HH:MM format
-        logger.info("Datetime: %s", dt)
-        dt_string = parse(dt).strftime("%Y-%m-%d %H:%M")
-        logger.info("Datetime string: %s", dt_string)
-        file_name = result["asset_details"].source_file_name
-        unit = result["asset_details"].unit
-        for index, value in enumerate(result["values"]):
-            request_json["features"][index]["properties"]["returned_values"][
-                dt_string
-            ] = {
-                "value": value,
-                "datetime": dt,
-                "unit": unit,
-                "file_name": file_name,
-            }
-    return request_json

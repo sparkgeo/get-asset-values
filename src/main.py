@@ -7,7 +7,7 @@ import argparse
 
 from app.create_response import ResponseStatus, WorkflowResponse
 from app.extra import string_to_json
-from app.get_values import get_values_for_multiple_stac_assets, merge_results_into_dict
+from app.get_values import get_values_for_multiple_stac_assets
 from app.get_values_logger import logger
 from app.points_data import PointsData
 from app.search_stac import StacSearch
@@ -58,11 +58,7 @@ def run_workflow(args: argparse.Namespace) -> None:
 
     if stac_search.number_of_results == 0:
         logger.error("No STAC items found")
-        WorkflowResponse(
-            status=ResponseStatus.ERROR,
-            error_msg="No STAC items found",
-            process_response={},
-        )
+        WorkflowResponse(status=ResponseStatus.ERROR, error_msg="No STAC items found")
     else:
         logger.info("Found STAC items, getting points data")
         points_data = PointsData(args.assets)
@@ -77,12 +73,12 @@ def run_workflow(args: argparse.Namespace) -> None:
             extra_args=args.extra_args,
         )
         logger.info("Merging results into dict")
-        process_response = merge_results_into_dict(return_values, points_data.data)
 
-        logger.debug("Process response: %s", process_response)
+        logger.debug("Returned values: %s", return_values)
         WorkflowResponse(
-            process_response=process_response,
+            return_values=return_values,
             status=ResponseStatus.SUCCESS,
+            points_json=points_data.data,
         )
 
 

@@ -6,6 +6,8 @@ import time
 from pathlib import Path
 
 import pandas as pd
+from dateutil.parser import parse
+from shortuuid import ShortUUID
 
 from app.get_values_logger import logger
 
@@ -19,18 +21,24 @@ class WorkflowResponse:
     def __init__(
         self,
         status: ResponseStatus,
-        process_response: dict,
+        return_values: dict = None,
+        points_json: dict = None,
         error_msg=None,
     ):
         self.status = status
         self.error_msg = error_msg
-        self.process_response = process_response
         if self.status == ResponseStatus.ERROR:
+            self.process_response = {}
             self.out_file = "./error.txt"
             self.create_error_response()
         else:
+            self.process_response = self.merge_results_into_dict(
+                return_values, points_json
+            )
+            self.points_json = points_json
             self.out_file = "./data.csv"
             self.to_csv()
+
         self.stac_item = self.createStacItem()
         self.stac_catalog_root = self.createStacCatalogRoot()
         self.write_stac_files()
@@ -167,6 +175,41 @@ class WorkflowResponse:
             "body": {"error": self.error_msg},
         }
         json_to_file(error_return, self.out_file)
+
+    def merge_results_into_dict(self, results_list: list, request_json: dict) -> dict:
+        """
+        Merges extracted values into the original request JSON.
+
+        Parameters:
+        - results_list (list): List of dicts with file paths and values.
+        - request_json (dict): Original request GeoJSON to merge results into.
+
+        Returns:
+        dict: The updated request JSON with merged results.
+        """
+        for feature in request_json["features"]:
+            if "id" not in feature["properties"]:
+                feature["properties"]["id"] = ShortUUID().random(length=8)
+            feature["properties"]["returned_values"] = {}
+
+        for result in results_list:
+            dt = result["asset_details"].datetime
+            # dt in YYYY-MM-DD HH:MM format
+            logger.info("Datetime: %s", dt)
+            dt_string = parse(dt).strftime("%Y-%m-%d %H:%M")
+            logger.info("Datetime string: %s", dt_string)
+            file_name = result["asset_details"].source_file_name
+            unit = result["asset_details"].unit
+            for index, value in enumerate(result["values"]):
+                request_json["features"][index]["properties"]["returned_values"][
+                    dt_string
+                ] = {
+                    "value": value,
+                    "datetime": dt,
+                    "unit": unit,
+                    "file_name": file_name,
+                }
+        return request_json
 
 
 def json_to_file(json_data: dict, file_path: str) -> None:
