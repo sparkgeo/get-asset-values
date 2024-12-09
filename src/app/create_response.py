@@ -200,7 +200,10 @@ class WorkflowResponse:
             dt_string = parse(dt).strftime("%Y-%m-%d")
             logger.info("Datetime string: %s", dt_string)
             file_name = result["asset_details"].source_file_name
-            unit = result["asset_details"].unit
+            if "unit" in self.extra_args:
+                unit = self.extra_args["unit"]
+            else:
+                unit = result["asset_details"].unit
             if self.extra_args and "output_name" in self.extra_args:
                 output_name = self.extra_args["output_name"]
                 output_name = eval(f"f'{output_name}'")

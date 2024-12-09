@@ -17,7 +17,7 @@
                 "--stac_collection",
                 "eocis-lst-slstrA-day",
                 "--extra_args",
-                "{'variable':'lst'}"
+                "{'variable':'lst','unit':'K'}"
             ]
         },
         {
