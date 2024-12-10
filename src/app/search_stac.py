@@ -63,7 +63,7 @@ class StacSearch:
         if self.query is None:
             search_params = {"datetime": time_range}
         else:
-            cq2_filter = self.query_to_filter(self.query)
+            cq2_filter = self.query_to_filter()
             search_params = {"datetime": time_range, "filter": cq2_filter}
         if self.collection:
             search_params["collections"] = [self.collection]

@@ -106,8 +106,9 @@ class WorkflowResponse:
         stem = Path(self.out_file).stem
         catalog = {
             "stac_version": "1.0.0",
-            "id": "catalog",
+            "id": "lst_results",
             "type": "Catalog",
+            "title": "LST Results",
             "description": "Root catalog",
             "links": [
                 {"type": "application/geo+json", "rel": "item", "href": f"{stem}.json"},
@@ -196,11 +197,11 @@ class WorkflowResponse:
 
         for result in results_list:
             dt = result["asset_details"].datetime
-            logger.info("Datetime: %s", dt)
-            dt_string = parse(dt).strftime("%Y-%m-%d")
-            logger.info("Datetime string: %s", dt_string)
+            datetime_string = parse(dt).strftime("%Y-%m-%d %H:%M:%S")
+            logger.info("Datetime string: %s", datetime_string)
             file_name = result["asset_details"].source_file_name
-            if "unit" in self.extra_args:
+            logger.info("File name: %s", file_name)
+            if self.extra_args and "unit" in self.extra_args:
                 unit = self.extra_args["unit"]
             else:
                 unit = result["asset_details"].unit
@@ -208,7 +209,8 @@ class WorkflowResponse:
                 output_name = self.extra_args["output_name"]
                 output_name = eval(f"f'{output_name}'")
             else:
-                output_name = dt_string
+                output_name = datetime_string[:-9]
+            logger.info("Output name: %s", output_name)
             for index, value in enumerate(result["values"]):
                 request_json["features"][index]["properties"]["returned_values"][
                     output_name
@@ -218,6 +220,11 @@ class WorkflowResponse:
                     "unit": unit,
                     "file_name": file_name,
                 }
+
+            for feature in request_json["features"]:
+                feature["properties"]["returned_values"] = dict(
+                    sorted(feature["properties"]["returned_values"].items())
+                )
         return request_json
 
 

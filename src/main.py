@@ -40,7 +40,10 @@ def parse_arguments():
     )
     args = parser.parse_args()
 
+    logger.info("Extra arguments: %s", args.extra_args)
+
     args.extra_args = string_to_json(args.extra_args) if args.extra_args else None
+    logger.info("Parsed extra arguments: %s", args.extra_args)
     args.stac_query = string_to_json(args.stac_query) if args.stac_query else None
 
     return args

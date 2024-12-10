@@ -1,0 +1,11 @@
+{
+    "inputs": {
+        "workspace": "sparkgeouser",
+        "assets": "sparkgeouser/points.geojson",
+        "stac_catalog": "https://test.eodatahub.org.uk/api/catalogue/stac/catalogs/supported-datasets/temp-sparkgeouser/processing-results/cat_c1f6f668-b2f8-11ef-b6b1-ee3aaed8a789",
+        "start_date": "2022-06-01",
+        "end_date": "2022-06-30",
+        "stac_collection": "col_c1f6f668-b2f8-11ef-b6b1-ee3aaed8a789",
+        "extra_args": "{'output_name':'{datetime_string}'}"
+    }
+}
